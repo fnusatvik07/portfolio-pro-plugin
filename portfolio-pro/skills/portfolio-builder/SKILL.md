@@ -38,8 +38,17 @@ found and the PDF contains a GitHub profile URL `https://github.com/<username>`,
 curl -sL "https://github.com/<username>.png?size=460" -o photo.png
 ```
 If the file is a real photo (a few hundred KB, not a tiny default identicon), set `resume.json` `"photo": "photo.png"`.
+
+**Fallback photo from Gravatar (public, from the email).** If still none, try the person's Gravatar (keyed off email):
+```
+HASH=$(python3 -c "import hashlib,sys;print(hashlib.md5(sys.argv[1].strip().lower().encode()).hexdigest())" "<email>")
+curl -sfL "https://www.gravatar.com/avatar/$HASH?s=460&d=404" -o photo.png   # 'd=404' => fails if none
+```
+If it downloads (a real image), set `"photo": "photo.png"`.
+
+**Photo precedence:** embedded PDF image -> public GitHub avatar -> Gravatar (email) -> a photo the user drops in the folder -> monogram fallback.
 - **Never scrape a photo from a LinkedIn URL** (login-gated and against LinkedIn's terms). LinkedIn cannot be
-  used as a photo source. Use only a local PDF's embedded image or a public GitHub avatar.
+  used as a photo source.
 - Needs `pip install pymupdf` (only for this optional step).
 
 ## Step 1 — Extract into `resume.json` (robust to messy resumes)
@@ -56,7 +65,8 @@ lives — handle headingless/two-column/metric-less resumes, reconstruct garbled
 ```json
 {
   "name": "", "headline": "", "roles": ["headline variants for the typewriter"],
-  "location": "", "photo": "https://... (optional; monogram used if absent)",
+  "location": "", "photo": "photo.png (optional; monogram used if absent)",
+  "resume_file": "resume.pdf (optional; copy the PDF next to index.html to add a Download CV button)",
   "available": true, "years_experience": "6+",
   "focus": ["3 focus areas"],
   "contact": { "email": "", "phone": "", "links": [{ "label": "LinkedIn", "url": "" }] },
@@ -78,28 +88,46 @@ lives — handle headingless/two-column/metric-less resumes, reconstruct garbled
 ## Step 2 — Confirm
 Show a short summary of what you extracted and ask: **"Got it right? Anything to fix?"** Apply edits to `resume.json`.
 
-## Step 3 — Ask theme + accent (config only)
-- **Theme:** light or dark (default: light — it tends to read best).
-- **Accent color:** a hex (default `#f59e0b`). Suggest one that fits their field if they don't care.
+## Step 3 — Prompt the user for their look (offer these clearly)
+Present a short menu and let them choose; default sensibly if they say "you pick".
+- **Theme:** `light`, `dark`, or `auto` (auto follows the visitor's system; default `light`).
+- **Accent color:** a preset name, a `#hex`, or `auto` (matches their photo). Presets:
+  `amber, gold, orange, rose, red, violet, indigo, sky, blue, teal, emerald, lime, slate`.
+  If they have a photo and want a cohesive look, suggest `auto`. Otherwise suggest one that fits their field.
+- **Font:** `default` (modern, Sora), `serif` (editorial, Fraunces), or `grotesk` (Space Grotesk). Default `default`.
 
 ## Step 4 — Build (deterministic; never hand-edit the output)
 ```
 python3 "${CLAUDE_PLUGIN_ROOT}/skills/portfolio-builder/build.py" \
-  --resume resume.json --template aurora --theme light --accent "#f59e0b" --out index.html
+  --resume resume.json --theme light --accent emerald --font default --out index.html
 ```
-build.py needs only python3 (no third-party deps).
+- `--accent` takes a preset name, a `#hex`, or `auto`. `--theme` is light/dark/auto. `--font` is default/serif/grotesk.
+- build.py needs only python3. `--accent auto` also needs `pip install pillow`.
 
 ## Step 5 — Quality pass
 - build.py prints `[warn]` if any `{{token}}` is unresolved — there should be none.
 - Open `index.html` in the browser so the user sees it.
 - To restyle, DO NOT edit HTML — just rerun build.py with a different `--theme` / `--accent`, or fix `resume.json`.
 
-## Step 6 — Deploy free to GitHub Pages (when the user says "deploy")
-Non-technical path, no terminal:
-1. New **public** repo (suggest `username.github.io` for a root site).
-2. Drag-and-drop `index.html` into the repo web UI.
-3. Settings → Pages → Source: `main` / root → Save → ~1 min → live URL. Share it.
-- If `gh` CLI is available and they prefer, automate it. Backup: Netlify Drop (app.netlify.com/drop).
+## Step 6 — Deploy to GitHub Pages, automated (only after the user approves)
+Publishing creates a PUBLIC site, so confirm first: "Deploy <name> to GitHub Pages?"
+
+**Auth (one time).** Check `gh auth status`.
+- Authed already: just deploy.
+- Not authed: ask the user to authenticate ONCE. Recommend `gh auth login` (browser or token; gh stores it
+  securely in the OS keyring and reuses it automatically next time). If they cannot use gh, have them create a
+  Personal Access Token with `repo` scope at https://github.com/settings/tokens and pass it as `GH_TOKEN`.
+  Never commit or print the token.
+
+**Deploy** (point it at the folder holding `index.html`, `photo.*`, and any résumé PDF):
+```
+bash "${CLAUDE_PLUGIN_ROOT}/skills/portfolio-builder/deploy.sh" <folder> <repo-name>
+# or with a token instead of gh:
+GH_TOKEN=<token> bash "${CLAUDE_PLUGIN_ROOT}/skills/portfolio-builder/deploy.sh" <folder> <repo-name>
+```
+It creates the repo, pushes the files, enables Pages, and prints `DEPLOYED <url>`. Share that URL.
+Pages can take ~1 minute to go live. Backup if they prefer no GitHub: Netlify Drop (app.netlify.com/drop).
+Never deploy a person's portfolio without their explicit go-ahead.
 
 ## What Aurora includes (so you can describe it)
 Loading splash, 2-column hero (photo/monogram + quick-facts, typewriter, teaser stats, cursor spotlight),

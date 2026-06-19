@@ -175,13 +175,79 @@ JS = """
 })();
 """
 
-FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
-         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-         '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&'
-         'family=Sora:wght@600;700;800&display=swap" rel="stylesheet">')
+# ---- user-selectable options: accent colors + font pairings ----
+ACCENT_PRESETS = {
+    'amber': '#f59e0b', 'gold': '#d4a017', 'orange': '#f97316', 'rose': '#f43f5e',
+    'red': '#ef4444', 'violet': '#7c3aed', 'indigo': '#6366f1', 'sky': '#0ea5e9',
+    'blue': '#2563eb', 'teal': '#14b8a6', 'emerald': '#059669', 'lime': '#65a30d',
+    'slate': '#64748b',
+}
+FONT_PRESETS = {
+    'default': {'display': "'Sora'", 'body': "'Inter'",
+                'link': 'family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800'},
+    'serif':   {'display': "'Fraunces'", 'body': "'Inter'",
+                'link': 'family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700'},
+    'grotesk': {'display': "'Space Grotesk'", 'body': "'Inter'",
+                'link': 'family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700'},
+}
 
-def build(resume_path, template, theme, accent, out, base_dir):
-    resume = derive(sanitize(json.load(open(resume_path, encoding='utf-8'))))
+def fonts_link(font):
+    f = FONT_PRESETS.get(font, FONT_PRESETS['default'])
+    return ('<link rel="preconnect" href="https://fonts.googleapis.com">'
+            '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+            f'<link href="https://fonts.googleapis.com/css2?{f["link"]}&display=swap" rel="stylesheet">')
+
+def dominant_color(path):
+    """Pick a vivid representative color from a photo (for --accent auto). Needs Pillow."""
+    try:
+        from PIL import Image
+        import colorsys
+    except Exception:
+        return None
+    try:
+        im = Image.open(path).convert('RGB').resize((80, 80))
+    except Exception:
+        return None
+    buckets = {}
+    for r, g, b in im.getdata():
+        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        if s < 0.32 or v < 0.22 or v > 0.95:
+            continue
+        k = int(h * 18)
+        acc = buckets.setdefault(k, [0, 0, 0, 0])
+        acc[0] += r; acc[1] += g; acc[2] += b; acc[3] += 1
+    if not buckets:
+        return None
+    r, g, b, n = buckets[max(buckets, key=lambda k: buckets[k][3])]
+    r, g, b = r / n / 255, g / n / 255, b / n / 255
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    s = min(1.0, max(0.55, s * 1.4)); v = min(0.82, max(v, 0.52))   # vivid + readable, never muddy
+    r, g, b = colorsys.hsv_to_rgb(h, s, v)
+    return '#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255))
+
+def resolve_accent(value, resume, resume_path):
+    v = (value or '').strip().lower()
+    if v in ACCENT_PRESETS:
+        return ACCENT_PRESETS[v]
+    if v.startswith('#') and len(v) in (4, 7):
+        return value
+    if v == 'auto':
+        photo = resume.get('photo')
+        if photo:
+            p = os.path.join(os.path.dirname(os.path.abspath(resume_path)), photo)
+            c = dominant_color(p)
+            if c:
+                return c
+        return ACCENT_PRESETS['indigo']
+    return ACCENT_PRESETS['amber']
+
+def build(resume_path, template, theme, accent, out, base_dir, font='default'):
+    raw = json.load(open(resume_path, encoding='utf-8'))
+    validate(raw)
+    resume = derive(sanitize(raw))
+    accent = resolve_accent(accent, resume, resume_path)   # name | #hex | auto -> hex
+    f = FONT_PRESETS.get(font, FONT_PRESETS['default'])
+
     tdir = os.path.join(base_dir, 'templates', template)
     base_css = open(os.path.join(base_dir, 'assets', 'base.css'), encoding='utf-8').read()
     extra_path = os.path.join(tdir, 'extra.css')
@@ -191,11 +257,13 @@ def build(resume_path, template, theme, accent, out, base_dir):
     body = mustache(open(os.path.join(tdir, 'body.html'), encoding='utf-8').read(), resume)
 
     accent_ink = ink_for(accent)
-    accent_css = f":root{{--accent:{accent};--accent-ink:{accent_ink};}}"
+    root_css = (f":root{{--accent:{accent};--accent-ink:{accent_ink};"
+                f"--display:{f['display']},var(--font);"
+                f"--font:{f['body']},system-ui,-apple-system,sans-serif;}}")
     title = html.escape(f"{resume.get('name','')} | {resume.get('headline','')}")
     desc = html.escape(resume.get('summary', resume.get('about', '')))[:160]
 
-    # auto favicon (monogram) + Open Graph for shareability
+    # auto favicon (monogram) + Open Graph + JSON-LD Person (SEO/shareability)
     ini = html.escape(resume.get('_initials', ''))
     fav = ("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>"
            f"<rect rx='22' width='100' height='100' fill='{accent}'/>"
@@ -208,31 +276,66 @@ def build(resume_path, template, theme, accent, out, base_dir):
           f'<meta name="theme-color" content="{accent}">')
     if resume.get('photo'):
         og += f'<meta property="og:image" content="{html.escape(resume["photo"])}">'
+    ld = {"@context": "https://schema.org", "@type": "Person",
+          "name": resume.get('name', ''), "jobTitle": resume.get('headline', ''),
+          "description": resume.get('summary', '')}
+    if resume.get('contact', {}).get('email'):
+        ld["email"] = resume['contact']['email']
+    sameas = [l.get('url') for l in (resume.get('contact', {}).get('links') or []) if l.get('url')]
+    if sameas:
+        ld["sameAs"] = sameas
+    jsonld = f'<script type="application/ld+json">{json.dumps(ld)}</script>'
+
+    # theme: light | dark | auto (auto follows the visitor's OS, set pre-paint to avoid flash)
+    theme_attr = theme if theme in ('light', 'dark') else 'light'
+    auto_script = ''
+    if theme == 'auto':
+        auto_script = ("<script>(function(){try{var s=localStorage.getItem('pp-theme');"
+                       "var d=s||((window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');"
+                       "document.documentElement.setAttribute('data-theme',d);}catch(e){}})();</script>")
 
     out_html = (
-        f'<!DOCTYPE html>\n<html lang="en" data-theme="{theme}">\n<head>\n'
+        f'<!DOCTYPE html>\n<html lang="en" data-theme="{theme_attr}">\n<head>\n'
         f'<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
-        f'<title>{title}</title>\n<meta name="description" content="{desc}">\n'
-        f'<link rel="icon" href="{favicon}">\n{og}\n{FONTS}\n'
-        f'<style>\n{base_css}\n{extra_css}\n{accent_css}\n</style>\n</head>\n<body>\n'
+        f'<title>{title}</title>\n<meta name="description" content="{desc}">\n{auto_script}\n'
+        f'<link rel="icon" href="{favicon}">\n{og}\n{jsonld}\n{fonts_link(font)}\n'
+        f'<style>\n{base_css}\n{extra_css}\n{root_css}\n</style>\n</head>\n<body>\n'
         f'{body}\n<script>{JS}\n{extra_js}</script>\n</body>\n</html>\n'
     )
     open(out, 'w', encoding='utf-8').write(out_html)
-    # QA: no unresolved tags
     leftover = re.findall(r'\{\{.*?\}\}', body)
-    print(f"[ok] wrote {out}  ({len(out_html)} bytes, theme={theme}, accent={accent})")
+    print(f"[ok] wrote {out}  ({len(out_html)} bytes, theme={theme}, accent={accent}, font={font})")
     if leftover:
         print(f"[warn] {len(leftover)} unresolved tag(s): {leftover[:5]}", file=sys.stderr)
         return 1
     return 0
 
+def validate(r):
+    """Friendly checks so bad resume.json fails clearly, not with a cryptic render."""
+    errs = []
+    if not isinstance(r, dict):
+        print("[error] resume.json must be a JSON object", file=sys.stderr); sys.exit(2)
+    if not r.get('name'):
+        errs.append("missing required field: name")
+    if not r.get('headline'):
+        errs.append("missing required field: headline")
+    for k in ('experience', 'projects', 'skills', 'metrics'):
+        if k in r and not isinstance(r[k], list):
+            errs.append(f"field '{k}' must be a list")
+    if errs:
+        for e in errs:
+            print(f"[error] {e}", file=sys.stderr)
+        sys.exit(2)
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--resume', required=True)
-    ap.add_argument('--template', required=True)
-    ap.add_argument('--theme', default='light', choices=['light', 'dark'])
-    ap.add_argument('--accent', default='#4f46e5')
+    ap.add_argument('--template', default='aurora')
+    ap.add_argument('--theme', default='light', choices=['light', 'dark', 'auto'])
+    ap.add_argument('--accent', default='amber',
+                    help="preset name (amber, sky, violet, emerald, rose, indigo, teal, slate...), #hex, or 'auto' (from photo)")
+    ap.add_argument('--font', default='default', choices=['default', 'serif', 'grotesk'])
     ap.add_argument('--out', default='index.html')
     ap.add_argument('--base-dir', default=os.path.dirname(os.path.abspath(__file__)))
     a = ap.parse_args()
-    sys.exit(build(a.resume, a.template, a.theme, a.accent, a.out, a.base_dir))
+    sys.exit(build(a.resume, a.template, a.theme, a.accent, a.out, a.base_dir, a.font))

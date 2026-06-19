@@ -49,6 +49,7 @@
       <div class="cta">
         <a class="btn" href="mailto:{{contact.email}}">Get in touch <svg class="ic"><use href="#ic-arrow"/></svg></a>
         {{#_primary_link}}<a class="btn ghost" href="{{url}}">{{label}}</a>{{/_primary_link}}
+        {{#resume_file}}<a class="btn ghost" href="{{resume_file}}" download>Download CV</a>{{/resume_file}}
       </div>
       {{#has.metrics}}<div class="au-mini">{{#metrics}}<div class="ms"><span class="mv countup">{{value}}</span><span class="ml">{{label}}</span></div>{{/metrics}}</div>{{/has.metrics}}
     </div>

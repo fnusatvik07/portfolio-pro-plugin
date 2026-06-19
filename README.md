@@ -69,14 +69,30 @@ Use the HTTPS URL. `portfolio-pro` is the plugin name and `claude4everyone` is t
 1. Make a folder and drop your **resume** in it (`resume.pdf`; PDF, DOCX or TXT all work). Optionally add
    a LinkedIn "Save to PDF" export and it gets merged in.
 2. Run `/portfolio` (or say "use the portfolio-builder skill with the resume in this folder").
-3. Confirm the extracted details, pick light or dark plus an accent color, and it builds `index.html` and opens it.
-4. When ready, say "deploy this to GitHub Pages" for a live link.
+3. Confirm the extracted details, then pick your look (prompted):
+   - **Theme:** light, dark, or auto (follows the visitor's system)
+   - **Accent color:** a preset (amber, sky, violet, emerald, rose, indigo, teal, slate, ...), any `#hex`, or `auto` (matches your photo)
+   - **Font:** default (modern), serif (editorial), or grotesk
+4. It builds `index.html` and opens it. When ready, say "deploy this to GitHub Pages" and it
+   **automatically** creates the repo, pushes, enables Pages, and returns your **live URL**.
+
+## Photos
+A headshot is found automatically, in this order: an image embedded in the PDF, then your public
+GitHub avatar, then Gravatar (from your email), then any `photo.jpg` you drop in the folder. If none is
+found, a clean monogram is used. (LinkedIn is never scraped: it is login-gated and against its terms.)
+
+## Deploy (automated)
+Say "deploy". The first time, you authenticate once with `gh auth login` (stored securely and reused), or
+provide a Personal Access Token with `repo` scope as `GH_TOKEN`. After that, deploys are one step and you
+get a `https://<you>.github.io/<repo>/` link. (Manual fallback: Netlify Drop.)
 
 ## Requirements
 
 * `python3` for `build.py` (no third party packages needed)
 * `markitdown` for reading PDF and DOCX: `pip install "markitdown[all]"` (installed on first run if missing)
 * Optional, only if you want to auto-extract a headshot from a PDF (for example a LinkedIn "Save to PDF" export): `pip install pymupdf`
+* Optional, only for the `auto` accent ("match my photo"): `pip install pillow`
+* Optional, only for automated deploy: GitHub CLI (`gh`) or a Personal Access Token with `repo` scope
 
 ## Restyle without regenerating
 
