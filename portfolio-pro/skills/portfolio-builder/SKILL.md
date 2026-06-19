@@ -30,8 +30,16 @@ python3 "${CLAUDE_PLUGIN_ROOT}/skills/portfolio-builder/extract_photo.py" <file.
 ```
 - On `WROTE photo.png`: set `resume.json` `"photo": "photo.png"` and keep `photo.png` next to `index.html`
   (commit it too when deploying).
-- On `NO_PHOTO_FOUND`: leave `photo` empty; the monogram fallback is used.
-- **Never scrape a photo from a LinkedIn URL** (login-gated and against LinkedIn's terms). Only read local PDFs.
+- On `NO_PHOTO_FOUND`: try the public GitHub avatar (see below); otherwise leave `photo` empty and the monogram fallback is used.
+
+**Fallback photo from a GitHub link (public, allowed).** Resumes often link GitHub. If no embedded photo was
+found and the PDF contains a GitHub profile URL `https://github.com/<username>`, download the public avatar:
+```
+curl -sL "https://github.com/<username>.png?size=460" -o photo.png
+```
+If the file is a real photo (a few hundred KB, not a tiny default identicon), set `resume.json` `"photo": "photo.png"`.
+- **Never scrape a photo from a LinkedIn URL** (login-gated and against LinkedIn's terms). LinkedIn cannot be
+  used as a photo source. Use only a local PDF's embedded image or a public GitHub avatar.
 - Needs `pip install pymupdf` (only for this optional step).
 
 ## Step 1 — Extract into `resume.json` (robust to messy resumes)
