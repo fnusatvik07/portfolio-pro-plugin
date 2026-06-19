@@ -1,0 +1,9 @@
+{
+  "name": "portfolio-pro",
+  "displayName": "Portfolio Pro",
+  "version": "1.0.0",
+  "description": "Turn any resume into a premium single-file 'Aurora' portfolio website (light/dark + any accent color, animated, with a built-in client-side chatbot), built deterministically from a resume.json and deployable free to GitHub Pages.",
+  "author": { "name": "fnusatvik07" },
+  "license": "MIT",
+  "keywords": ["portfolio", "resume", "website", "github-pages", "career", "no-code"]
+}

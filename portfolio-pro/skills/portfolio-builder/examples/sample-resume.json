@@ -1,0 +1,81 @@
+{
+  "name": "Maya Sterling",
+  "headline": "Senior Data Analyst",
+  "roles": ["Senior Data Analyst", "Analytics Partner", "Dashboard Builder", "A/B Testing Lead"],
+  "location": "Remote",
+  "photo": "",
+  "available": true,
+  "years_experience": "6+",
+  "focus": ["A/B Experimentation", "Analytics Engineering", "Decision Science"],
+  "contact": {
+    "email": "maya.sterling@example.com",
+    "phone": "+1 555 0142",
+    "links": [
+      { "label": "LinkedIn", "url": "https://www.linkedin.com/in/example" },
+      { "label": "GitHub", "url": "https://github.com/example" }
+    ]
+  },
+  "summary": "I turn messy data into decisions people act on, dashboards that get used and experiments that move the numbers.",
+  "about": "Data analyst with 6+ years turning messy data into decisions. I build dashboards people actually use and partner with product teams to ship measurable wins, from churn models to checkout experiments.",
+  "metrics": [
+    { "value": "70%", "label": "Cut in weekly reporting time" },
+    { "value": "+4.2%", "label": "Checkout conversion lift (A/B)" },
+    { "value": "200+", "label": "Stakeholders served" }
+  ],
+  "experience": [
+    {
+      "role": "Senior Data Analyst", "company": "Northwind Retail", "dates": "2022 - Present",
+      "bullets": [
+        "Built the seller-growth analytics suite used by 200+ category managers, cutting weekly reporting time by 70%.",
+        "Led an A/B testing framework that lifted checkout conversion by 4.2%.",
+        "Mentored 3 junior analysts and set SQL and dbt code-review standards."
+      ],
+      "tags": ["70% faster reporting", "+4.2% conversion", "200+ users"]
+    },
+    {
+      "role": "Data Analyst", "company": "Quikbite", "dates": "2019 - 2022",
+      "bullets": [
+        "Owned the delivery-ETA model evaluation pipeline across 15 cities.",
+        "Designed exec dashboards that became the weekly leadership ritual."
+      ],
+      "tags": ["15 cities", "Exec dashboards"]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Churn Early-Warning System", "tag": "Machine Learning",
+      "description": "Predictive model flagging at-risk accounts 30 days out at 0.81 precision; now drives the retention playbook.",
+      "link": "https://github.com/example"
+    },
+    {
+      "title": "City Demand Heatmaps", "tag": "Analytics",
+      "description": "Interactive geo-dashboards for ops capacity planning across 15 cities.",
+      "link": ""
+    }
+  ],
+  "skills": [
+    { "group": "Languages and Query", "items": ["SQL", "Python", "pandas"] },
+    { "group": "Analytics and BI", "items": ["Looker", "Tableau", "dbt", "BigQuery"] },
+    { "group": "Methods", "items": ["A/B Testing", "Statistics", "Forecasting"] }
+  ],
+  "education": [
+    { "degree": "B.Tech, Computer Science", "school": "Westbridge Institute of Technology", "year": "2015" }
+  ],
+  "certifications": [
+    { "name": "Advanced Data Analytics Certification", "issuer": "Data Institute" }
+  ],
+  "publications": [],
+  "awards": ["Analytics Excellence Award 2023", "Top 1% A/B Testing Practitioner"],
+  "languages": ["English", "Spanish", "Hindi"],
+  "testimonials": [
+    { "quote": "Maya turns ambiguous questions into dashboards the whole org runs on.", "author": "VP Product, Northwind Retail" },
+    { "quote": "The rare analyst who moves the metric, not just reports it.", "author": "Growth Lead, Quikbite" }
+  ],
+  "chatbot": [
+    { "q": "What's your strongest skill?", "a": "SQL and experimentation. I have shipped A/B testing frameworks end to end and built the analytics stack 200+ stakeholders rely on." },
+    { "q": "Tell me about your biggest impact.", "a": "I cut weekly reporting time by 70% with a seller-growth analytics suite, and lifted checkout conversion by 4.2% through a structured A/B testing program." },
+    { "q": "What tools do you use?", "a": "SQL, Python (pandas), dbt, Looker, Tableau and BigQuery day to day, plus solid stats and forecasting." },
+    { "q": "Are you open to new roles?", "a": "Yes. I'm open to senior data analyst and analytics-partner roles. The fastest way to reach me is maya.sterling@example.com." },
+    { "q": "What's your education?", "a": "B.Tech in Computer Science from Westbridge Institute of Technology, plus an Advanced Data Analytics certification." }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "claude4everyone",
+  "description": "Workshop plugins for the Claude for Everyone session.",
+  "plugins": [
+    {
+      "name": "portfolio-pro",
+      "source": "./portfolio-pro",
+      "version": "1.0.0",
+      "displayName": "Portfolio Pro",
+      "description": "Turn any resume into a premium 'Aurora' portfolio website (light/dark + any accent, built-in chatbot) and deploy it free to GitHub Pages.",
+      "author": { "name": "fnusatvik07" },
+      "keywords": ["portfolio", "resume", "website", "github-pages", "career"]
+    }
+  ]
+}
