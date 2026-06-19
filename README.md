@@ -61,30 +61,30 @@ Then tell your agent:
 
 ## Use it
 
-1. Make a folder and drop your **resume** in it (`resume.pdf` — PDF, DOCX, or TXT). Optionally add a LinkedIn
+1. Make a folder and drop your **resume** in it (`resume.pdf` - PDF, DOCX, or TXT). Optionally add a LinkedIn
    "Save to PDF" export; it gets merged in.
 2. Run `/portfolio` (or point your agent at `SKILL.md`).
 3. Answer three prompts:
-   - **Theme** — light · dark · auto
-   - **Accent** — a preset (amber, sky, violet, emerald, rose, indigo, teal, slate, ...), any `#hex`, or `auto` (matches your photo)
-   - **Font** — default · serif · grotesk
+   - **Theme** - light · dark · auto
+   - **Accent** - a preset (amber, sky, violet, emerald, rose, indigo, teal, slate, ...), any `#hex`, or `auto` (matches your photo)
+   - **Font** - default · serif · grotesk
 4. It builds `index.html` and opens it. Say **"deploy"** and it publishes to GitHub Pages and returns your **live URL**.
 
 ---
 
 ## Features
 
-- **One self-contained `index.html`** — inline CSS/JS, zero runtime dependencies, works for years.
-- **Deterministic** — the design is fixed in the plugin; the agent only writes a `resume.json` and runs the
+- **One self-contained `index.html`** - inline CSS/JS, zero runtime dependencies, works for years.
+- **Deterministic** - the design is fixed in the plugin; the agent only writes a `resume.json` and runs the
   renderer, so the same input always yields the same output.
-- **Designed sections** — animated hero, bento impact metrics, vertical career timeline, icon-grouped skills,
+- **Designed sections** - animated hero, bento impact metrics, vertical career timeline, icon-grouped skills,
   project cards with tech stack, certifications, services, speaking, testimonials, education.
-- **Built-in chatbot** — answers visitor questions from your resume. Fully client-side, no backend, no API key.
-- **Smart photo sourcing** — embedded PDF image -> public GitHub avatar -> Gravatar (email) -> a photo you drop
+- **Built-in chatbot** - answers visitor questions from your resume. Fully client-side, no backend, no API key.
+- **Smart photo sourcing** - embedded PDF image -> public GitHub avatar -> Gravatar (email) -> a photo you drop
   in -> clean monogram. (LinkedIn is never scraped: login-gated and against its terms.)
-- **Themeable** — light / dark / auto, any accent color (or auto from your photo), three font pairings.
-- **Share-ready** — favicon, Open Graph, JSON-LD, print stylesheet, and a "Download CV" button.
-- **One-step deploy** — automated GitHub Pages publish with your live URL.
+- **Themeable** - light / dark / auto, any accent color (or auto from your photo), three font pairings.
+- **Share-ready** - favicon, Open Graph, JSON-LD, print stylesheet, and a "Download CV" button.
+- **One-step deploy** - automated GitHub Pages publish with your live URL.
 
 ---
 
