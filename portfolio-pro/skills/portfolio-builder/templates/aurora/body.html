@@ -84,6 +84,12 @@
   </div>
 </div></section>{{/about}}
 
+{{#has.services}}<section class="block" id="services"><div class="wrap">
+  <div class="kick"><span class="num"></span><span class="lbl">What I do</span></div>
+  <h2 class="t reveal">Services</h2>
+  <div class="skillgrid">{{#services}}<div class="card glass reveal" style="padding:24px"><h3 style="font-family:var(--display);font-size:18px;margin-bottom:8px">{{title}}</h3><p class="muted" style="font-size:15px">{{description}}</p></div>{{/services}}</div>
+</div></section>{{/has.services}}
+
 {{#has.metrics}}<section class="block" id="impact"><div class="wrap">
   <div class="kick"><span class="num"></span><span class="lbl">Impact</span></div>
   <h2 class="t reveal">Results that moved the needle</h2>
@@ -122,6 +128,7 @@
     </div>
     <div class="proj-body">
       <h3>{{title}}</h3><p>{{description}}</p>
+      <div class="proj-stack">{{#stack}}<span>{{.}}</span>{{/stack}}</div>
       {{#link}}<a href="{{link}}">View project <svg class="ic" style="width:14px;height:14px;vertical-align:-2px"><use href="#ic-arrow"/></svg></a>{{/link}}
     </div>
   </div>{{/projects}}</div>
@@ -153,6 +160,12 @@
   <h2 class="t reveal">What people say</h2>
   <div class="quotes">{{#testimonials}}<div class="quote glass reveal"><div class="qm">&ldquo;</div><p>{{quote}}</p><div class="who">{{author}}</div></div>{{/testimonials}}</div>
 </div></section>{{/has.testimonials}}
+
+{{#has.speaking}}<section class="block" id="speaking"><div class="wrap">
+  <div class="kick"><span class="num"></span><span class="lbl">Speaking</span></div>
+  <h2 class="t reveal">Talks &amp; events</h2>
+  <div class="au-list">{{#speaking}}<div class="award reveal"><svg class="ic"><use href="#ic-spark"/></svg><div><strong>{{title}}</strong>{{#event}} <span class="muted">{{event}}{{#year}}, {{year}}{{/year}}</span>{{/event}} {{#link}}<a href="{{link}}" class="accent">Watch</a>{{/link}}</div></div>{{/speaking}}</div>
+</div></section>{{/has.speaking}}
 
 {{#has.education}}<section class="block" id="education"><div class="wrap">
   <div class="kick"><span class="num"></span><span class="lbl">Background</span></div>

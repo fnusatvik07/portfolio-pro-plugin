@@ -110,7 +110,8 @@ def derive(resume):
     links = (resume.get('contact') or {}).get('links') or []
     resume['_primary_link'] = links[0] if links else None
     keys = ['metrics', 'experience', 'projects', 'skills', 'education',
-            'certifications', 'publications', 'awards', 'languages', 'testimonials', 'chatbot']
+            'certifications', 'publications', 'awards', 'languages', 'testimonials', 'chatbot',
+            'services', 'speaking']
     resume['has'] = {k: bool(resume.get(k)) for k in keys}
     # credibility marquee feed (companies, headline metrics, top skills, schools)
     mq = []

@@ -330,6 +330,9 @@ h2.t::after{content:"";position:absolute;left:0;bottom:0;width:52px;height:3px;b
 .proj-head .pill{position:absolute;top:14px;left:14px;margin:0;color:#fff;background:rgba(0,0,0,.32);backdrop-filter:blur(6px)}
 .proj-body{padding:22px}
 .proj-body h3{padding-right:0;margin-bottom:8px}
+.proj-stack{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.proj-stack:empty{display:none}
+.proj-stack span{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:3px 9px}
 
 .tl-head{display:flex;gap:14px;align-items:center;margin-bottom:10px}
 .tl-mark{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;

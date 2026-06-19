@@ -45,12 +45,14 @@
     {
       "title": "Churn Early-Warning System", "tag": "Machine Learning",
       "description": "Predictive model flagging at-risk accounts 30 days out at 0.81 precision; now drives the retention playbook.",
-      "link": "https://github.com/example"
+      "link": "https://github.com/example",
+      "stack": ["Python", "scikit-learn", "FAISS"]
     },
     {
       "title": "City Demand Heatmaps", "tag": "Analytics",
       "description": "Interactive geo-dashboards for ops capacity planning across 15 cities.",
-      "link": ""
+      "link": "",
+      "stack": ["Looker", "SQL", "BigQuery"]
     }
   ],
   "skills": [
@@ -70,6 +72,14 @@
   "testimonials": [
     { "quote": "Maya turns ambiguous questions into dashboards the whole org runs on.", "author": "VP Product, Northwind Retail" },
     { "quote": "The rare analyst who moves the metric, not just reports it.", "author": "Growth Lead, Quikbite" }
+  ],
+  "services": [
+    { "title": "Analytics and Dashboards", "description": "Self-serve BI and exec dashboards that teams actually use." },
+    { "title": "Experimentation", "description": "A/B testing programs from design to readout and rollout." },
+    { "title": "Data Storytelling", "description": "Turning messy data into clear, decision-ready narratives." }
+  ],
+  "speaking": [
+    { "title": "Building Dashboards People Actually Use", "event": "Data Meetup", "year": "2025", "link": "" }
   ],
   "chatbot": [
     { "q": "What's your strongest skill?", "a": "SQL and experimentation. I have shipped A/B testing frameworks end to end and built the analytics stack 200+ stakeholders rely on." },
