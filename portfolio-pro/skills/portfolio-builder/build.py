@@ -227,7 +227,9 @@ def dominant_color(path):
     except Exception:
         return None
     buckets = {}
-    for r, g, b in im.getdata():
+    data = im.tobytes()
+    for i in range(0, len(data) - 2, 3):
+        r, g, b = data[i], data[i + 1], data[i + 2]
         h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         if s < 0.32 or v < 0.22 or v > 0.95:
             continue
