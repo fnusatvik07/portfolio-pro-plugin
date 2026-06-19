@@ -1,103 +1,117 @@
+<div align="center">
+
 # Portfolio Pro
 
-Turn **any resume into a premium portfolio website** with no coding. Drop a resume in a folder, run the
-plugin, and get a polished, single file site (light or dark, your accent color) with a built in chatbot,
-ready to deploy free to GitHub Pages.
+**Turn any resume into a premium portfolio website. No coding.**
 
-A Claude Code plugin. Built for the *Claude for Everyone* workshop.
+Drop a resume in a folder, answer three quick prompts, and get a polished single-file site
+(light or dark, your accent color) with a built-in chatbot, then deploy it free with one step.
+
+![License](https://img.shields.io/badge/license-MIT-black)
+![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-d97757)
+![Zero deps](https://img.shields.io/badge/output-single%20HTML%20file-2ea44f)
+![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-0969da)
+
+</div>
+
+---
 
 ## Preview
 
-Hero, dark and light:
+| Light | Dark |
+| :---: | :---: |
+| ![Light](screenshots/hero-light.png) | ![Dark](screenshots/hero-dark.png) |
 
-| Dark | Light |
-| --- | --- |
-| ![Dark hero](screenshots/hero-dark.png) | ![Light hero](screenshots/hero-light.png) |
+<details>
+<summary><b>Full page &amp; mobile</b></summary>
 
-Full page, dark and light:
+| Full page (light) | Full page (dark) |
+| :---: | :---: |
+| ![Full light](screenshots/full-light.png) | ![Full dark](screenshots/full-dark.png) |
 
-| Dark | Light |
-| --- | --- |
-| ![Full page dark](screenshots/full-dark.png) | ![Full page light](screenshots/full-light.png) |
+<img src="screenshots/mobile.png" width="280" alt="Mobile dark"> <img src="screenshots/mobile-light.png" width="280" alt="Mobile light">
 
-Mobile, dark and light:
+</details>
 
-<img src="screenshots/mobile.png" width="300" alt="Mobile dark"> <img src="screenshots/mobile-light.png" width="300" alt="Mobile light">
+> Demo uses a fictional person ("Maya Sterling") and fictional companies.
 
-*(Demo uses a fictional person, "Maya Sterling", and fictional companies.)*
+---
 
-## How it works (deterministic by design)
+## Install
 
-The design lives in fixed plugin code. The agent only does two things:
-
-1. extracts your resume into a `resume.json`
-2. runs `build.py`
-
-Same code plus your data produces identical output every time. No regenerated design.
-
-```
-resume.pdf / linkedin.pdf  ->  resume.json  ->  build.py  ->  index.html  ->  GitHub Pages
-```
-
-## The "Aurora" design includes
-
-* Loading splash, two column hero (photo or monogram, quick facts, typewriter role, teaser stats, cursor spotlight)
-* Credibility marquee and a bento impact grid with animated count up
-* Vertical career timeline (company marks, metric chips, "Now" badge, drawn rail)
-* Icon category skills, gradient or image project cards, credential badges
-* Education, awards, languages, testimonials, contact
-* A client side chatbot that answers from your resume (no backend, no API key)
-* Scroll spy nav, mobile menu, light or dark, any accent color, favicon and Open Graph
-* One self contained `index.html`, zero runtime dependencies
-
-## Install (in Claude Code)
-
-Run these as **two separate messages**:
-
+### Claude Code  (recommended)
+Run as **two separate messages**:
 ```
 /plugin marketplace add https://github.com/fnusatvik07/portfolio-pro-plugin
 ```
-
 ```
 /plugin install portfolio-pro@claude4everyone
 ```
+Then use it any time with `/portfolio` (or just say *"build a portfolio from the resume in this folder"*).
 
-Use the HTTPS URL. `portfolio-pro` is the plugin name and `claude4everyone` is the marketplace name.
+### Any other coding agent  (Codex, Cursor, Gemini CLI, Cline, Copilot agent mode, ...)
+The skill is plain Markdown + a Python script, so any agent with **file + shell access** can run it:
+```
+git clone https://github.com/fnusatvik07/portfolio-pro-plugin
+```
+Then tell your agent:
+> Read `portfolio-pro/skills/portfolio-builder/SKILL.md` and follow it to build a portfolio from my resume in this folder.
+
+---
 
 ## Use it
 
-1. Make a folder and drop your **resume** in it (`resume.pdf`; PDF, DOCX or TXT all work). Optionally add
-   a LinkedIn "Save to PDF" export and it gets merged in.
-2. Run `/portfolio` (or say "use the portfolio-builder skill with the resume in this folder").
-3. Confirm the extracted details, then pick your look (prompted):
-   - **Theme:** light, dark, or auto (follows the visitor's system)
-   - **Accent color:** a preset (amber, sky, violet, emerald, rose, indigo, teal, slate, ...), any `#hex`, or `auto` (matches your photo)
-   - **Font:** default (modern), serif (editorial), or grotesk
-4. It builds `index.html` and opens it. When ready, say "deploy this to GitHub Pages" and it
-   **automatically** creates the repo, pushes, enables Pages, and returns your **live URL**.
+1. Make a folder and drop your **resume** in it (`resume.pdf` — PDF, DOCX, or TXT). Optionally add a LinkedIn
+   "Save to PDF" export; it gets merged in.
+2. Run `/portfolio` (or point your agent at `SKILL.md`).
+3. Answer three prompts:
+   - **Theme** — light · dark · auto
+   - **Accent** — a preset (amber, sky, violet, emerald, rose, indigo, teal, slate, ...), any `#hex`, or `auto` (matches your photo)
+   - **Font** — default · serif · grotesk
+4. It builds `index.html` and opens it. Say **"deploy"** and it publishes to GitHub Pages and returns your **live URL**.
 
-## Photos
-A headshot is found automatically, in this order: an image embedded in the PDF, then your public
-GitHub avatar, then Gravatar (from your email), then any `photo.jpg` you drop in the folder. If none is
-found, a clean monogram is used. (LinkedIn is never scraped: it is login-gated and against its terms.)
+---
 
-## Deploy (automated)
-Say "deploy". The first time, you authenticate once with `gh auth login` (stored securely and reused), or
-provide a Personal Access Token with `repo` scope as `GH_TOKEN`. After that, deploys are one step and you
-get a `https://<you>.github.io/<repo>/` link. (Manual fallback: Netlify Drop.)
+## Features
+
+- **One self-contained `index.html`** — inline CSS/JS, zero runtime dependencies, works for years.
+- **Deterministic** — the design is fixed in the plugin; the agent only writes a `resume.json` and runs the
+  renderer, so the same input always yields the same output.
+- **Designed sections** — animated hero, bento impact metrics, vertical career timeline, icon-grouped skills,
+  project cards with tech stack, certifications, services, speaking, testimonials, education.
+- **Built-in chatbot** — answers visitor questions from your resume. Fully client-side, no backend, no API key.
+- **Smart photo sourcing** — embedded PDF image -> public GitHub avatar -> Gravatar (email) -> a photo you drop
+  in -> clean monogram. (LinkedIn is never scraped: login-gated and against its terms.)
+- **Themeable** — light / dark / auto, any accent color (or auto from your photo), three font pairings.
+- **Share-ready** — favicon, Open Graph, JSON-LD, print stylesheet, and a "Download CV" button.
+- **One-step deploy** — automated GitHub Pages publish with your live URL.
+
+---
+
+## Deploy
+
+Say **"deploy"**. The first time, connect GitHub once:
+
+- **Easiest:** run `gh auth login` (stored securely, reused automatically), or
+- **Token:** create one at `github.com/settings/tokens` with `repo` scope and pass it as `GH_TOKEN`.
+
+After that, every deploy is a single step and returns `https://<you>.github.io/<repo>/`.
+Prefer no GitHub? Drag the folder to [Netlify Drop](https://app.netlify.com/drop).
+
+---
 
 ## Requirements
 
-* `python3` for `build.py` (no third party packages needed)
-* `markitdown` for reading PDF and DOCX: `pip install "markitdown[all]"` (installed on first run if missing)
-* Optional, only if you want to auto-extract a headshot from a PDF (for example a LinkedIn "Save to PDF" export): `pip install pymupdf`
-* Optional, only for the `auto` accent ("match my photo"): `pip install pillow`
-* Optional, only for automated deploy: GitHub CLI (`gh`) or a Personal Access Token with `repo` scope
+| For | Need |
+| --- | --- |
+| Building | `python3` (no third-party packages) |
+| Reading PDF / DOCX | `pip install "markitdown[all]"` (auto-installed on first run) |
+| `auto` accent ("match my photo") | `pip install pillow` |
+| Headshot from PDF | `pip install pymupdf` |
+| Automated deploy | GitHub CLI (`gh`) or a `repo`-scoped token |
 
-## Restyle without regenerating
-
-Do not edit the HTML. Rerun `build.py` with a different `--theme` or `--accent`, or tweak `resume.json`.
+---
 
 ## License
 
-MIT
+MIT © fnusatvik07

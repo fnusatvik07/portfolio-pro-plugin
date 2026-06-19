@@ -26,7 +26,9 @@ elif [ -n "$TOKEN" ]; then
   OWNER="$(curl -fsSL -H "Authorization: token $TOKEN" https://api.github.com/user | sed -n 's/.*"login": *"\([^"]*\)".*/\1/p' | head -1)"
 fi
 [ -n "$OWNER" ] && [ -n "$TOKEN" ] || {
-  echo "NEED_AUTH: run 'gh auth login' (recommended) or pass GH_TOKEN=<token with repo scope>"; exit 3; }
+  echo "NEED_AUTH: connect GitHub once. Easiest: run 'gh auth login'."
+  echo "  Or create a token (repo scope) at https://github.com/settings/tokens/new?scopes=repo and re-run with GH_TOKEN=<token>"
+  exit 3; }
 
 API="https://api.github.com"
 AUTH=(-H "Authorization: token $TOKEN" -H "Accept: application/vnd.github+json")

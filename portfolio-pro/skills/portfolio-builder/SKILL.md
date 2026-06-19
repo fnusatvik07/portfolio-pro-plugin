@@ -116,9 +116,13 @@ Publishing creates a PUBLIC site, so confirm first: "Deploy <name> to GitHub Pag
 
 **Auth (one time).** Check `gh auth status`.
 - Authed already: just deploy.
-- Not authed: ask the user to authenticate ONCE. Recommend `gh auth login` (browser or token; gh stores it
-  securely in the OS keyring and reuses it automatically next time). If they cannot use gh, have them create a
-  Personal Access Token with `repo` scope at https://github.com/settings/tokens and pass it as `GH_TOKEN`.
+- NOT authed: **STOP and guide the user — do not attempt the deploy yet.** Present both options and wait:
+  - **Option A (easiest):** ask them to run `gh auth login` (choose GitHub.com -> HTTPS -> "Login with a web
+    browser", then paste the one-time code). gh stores it securely and reuses it automatically next time.
+  - **Option B (token):** tell them to open
+    `https://github.com/settings/tokens/new?scopes=repo&description=Portfolio%20Pro` -> click **Generate token**
+    -> copy it -> then deploy with `GH_TOKEN=<paste> bash .../deploy.sh <folder> <repo-name>`.
+  After they authenticate, re-run the deploy. (`deploy.sh` also prints a `NEED_AUTH:` hint if run without auth.)
   Never commit or print the token.
 
 **Deploy** (point it at the folder holding `index.html`, `photo.*`, and any résumé PDF):
