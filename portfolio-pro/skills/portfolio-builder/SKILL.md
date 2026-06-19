@@ -22,6 +22,18 @@ The user dropped a resume into the working folder. Find and read it yourself:
 - Convert: `python3 -m markitdown <file>` (install once if missing: `pip install "markitdown[all]"`).
 - Only ask the user for the file if you genuinely can't find one.
 
+## Step 0b - Optional: extract a headshot from the PDF (ToS-safe)
+A real photo makes the hero shine. If the user provided a LinkedIn "Save to PDF" export or a resume PDF
+that includes a headshot, extract it from the local file:
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/portfolio-builder/extract_photo.py" <file.pdf> photo.png
+```
+- On `WROTE photo.png`: set `resume.json` `"photo": "photo.png"` and keep `photo.png` next to `index.html`
+  (commit it too when deploying).
+- On `NO_PHOTO_FOUND`: leave `photo` empty; the monogram fallback is used.
+- **Never scrape a photo from a LinkedIn URL** (login-gated and against LinkedIn's terms). Only read local PDFs.
+- Needs `pip install pymupdf` (only for this optional step).
+
 ## Step 1 — Extract into `resume.json` (robust to messy resumes)
 Write a `resume.json` in the working folder following the schema below. This is the ONLY place judgment
 lives — handle headingless/two-column/metric-less resumes, reconstruct garbled text, infer structure.

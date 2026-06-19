@@ -76,6 +76,7 @@ Use the HTTPS URL. `portfolio-pro` is the plugin name and `claude4everyone` is t
 
 * `python3` for `build.py` (no third party packages needed)
 * `markitdown` for reading PDF and DOCX: `pip install "markitdown[all]"` (installed on first run if missing)
+* Optional, only if you want to auto-extract a headshot from a PDF (for example a LinkedIn "Save to PDF" export): `pip install pymupdf`
 
 ## Restyle without regenerating
 
