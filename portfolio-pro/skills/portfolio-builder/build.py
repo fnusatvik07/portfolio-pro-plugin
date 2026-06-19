@@ -154,6 +154,23 @@ def derive(resume):
         p['_grad'] = f"linear-gradient(135deg,var(--accent),hsl({h2}deg 60% 48%))"
     for e in (resume.get('experience') or []):
         e['_logo_letter'] = (e.get('company') or '?').strip()[:1].upper()
+    # compact knowledge base for the chatbot to answer typed questions from real data
+    c = resume.get('contact') or {}
+    resume['_kb_json'] = json.dumps({
+        'name': name, 'headline': resume.get('headline', ''),
+        'summary': resume.get('summary') or resume.get('about', ''),
+        'about': resume.get('about', ''),
+        'available': bool(resume.get('available')),
+        'email': c.get('email', ''), 'location': resume.get('location', ''),
+        'years': resume.get('years_experience', ''),
+        'skills': [{'group': g.get('group', ''), 'items': g.get('items', [])} for g in (resume.get('skills') or [])],
+        'experience': [{'role': e.get('role', ''), 'company': e.get('company', ''), 'dates': e.get('dates', '')} for e in (resume.get('experience') or [])],
+        'education': [{'degree': e.get('degree', ''), 'school': e.get('school', ''), 'year': e.get('year', '')} for e in (resume.get('education') or [])],
+        'certifications': [c2.get('name', '') for c2 in (resume.get('certifications') or [])],
+        'projects': [{'title': p.get('title', ''), 'tag': p.get('tag', '')} for p in (resume.get('projects') or [])],
+        'metrics': [{'value': m.get('value', ''), 'label': m.get('label', '')} for m in (resume.get('metrics') or [])],
+        'links': [{'label': l.get('label', ''), 'url': l.get('url', '')} for l in (c.get('links') or [])],
+    })
     return resume
 
 JS = """

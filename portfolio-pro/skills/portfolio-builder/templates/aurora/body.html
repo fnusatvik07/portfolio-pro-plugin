@@ -173,10 +173,12 @@
 
 {{#has.chatbot}}
 <button class="au-chat-btn" id="auChatBtn" aria-label="Ask about me">&#128172;</button>
-<div class="au-chat" id="auChat" data-name="{{name}}" data-chat='{{{_chatbot_json}}}'>
+<div class="au-chat" id="auChat" data-name="{{name}}">
   <div class="head"><b>Ask about {{name}}</b><div>Answers drawn from the resume</div></div>
   <div class="au-cbody" id="auCbody"></div>
   <div class="au-sugg" id="auSugg"></div>
   <div class="au-cfoot"><input id="auCinput" placeholder="Ask about experience, skills..." aria-label="Ask a question"><button id="auCsend" aria-label="Send">&#10148;</button></div>
 </div>
+<script type="application/json" id="ppChat">{{{_chatbot_json}}}</script>
+<script type="application/json" id="ppKb">{{{_kb_json}}}</script>
 {{/has.chatbot}}

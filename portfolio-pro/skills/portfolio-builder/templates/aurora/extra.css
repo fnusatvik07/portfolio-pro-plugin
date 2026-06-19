@@ -231,6 +231,12 @@ h2.t{font-family:var(--display);font-size:clamp(28px,4vw,44px);font-weight:800;l
 .au-cfoot input{flex:1;background:transparent;border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ink);font-family:inherit;font-size:14px}
 .au-cfoot input:focus{outline:none;border-color:var(--accent)}
 .au-cfoot button{background:var(--accent);color:var(--accent-ink);border:none;border-radius:10px;padding:0 15px;cursor:pointer;font-size:16px}
+.au-msg{animation:au-rise .25s ease both}
+.au-typing{display:flex;gap:5px;align-items:center}
+.au-typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);display:inline-block;animation:au-typdot 1s infinite}
+.au-typing span:nth-child(2){animation-delay:.15s}
+.au-typing span:nth-child(3){animation-delay:.3s}
+@keyframes au-typdot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
 
 /* sprite */
 .icsprite{position:absolute;width:0;height:0;overflow:hidden}

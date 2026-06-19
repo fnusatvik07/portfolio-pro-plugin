@@ -117,24 +117,53 @@
     c.addEventListener('mouseleave', function(){ c.style.transform = ''; });
   });
 
-  // chatbot (client-side, canned answers)
+  // ===== chatbot: canned Q&A + intent answers from the resume KB (client-side, no backend) =====
   var chatEl = document.getElementById('auChat');
   if (chatEl) {
-    var qa = []; try { qa = JSON.parse(chatEl.getAttribute('data-chat') || '[]'); } catch(e){}
-    var who = chatEl.getAttribute('data-name') || 'me';
+    var qa = [], kb = {};
+    try { var qel = document.getElementById('ppChat'); if (qel) qa = JSON.parse(qel.textContent || '[]'); } catch(e){}
+    try { var kel = document.getElementById('ppKb'); if (kel) kb = JSON.parse(kel.textContent || '{}'); } catch(e){}
+    var who = (kb.name || chatEl.getAttribute('data-name') || 'me').split(' ')[0];
     var btn = document.getElementById('auChatBtn'), body = document.getElementById('auCbody');
     var sugg = document.getElementById('auSugg'), input = document.getElementById('auCinput'), send = document.getElementById('auCsend');
-    var STOP = {the:1,a:1,an:1,is:1,are:1,you:1,your:1,what:1,whats:1,tell:1,me:1,about:1,do:1,of:1,to:1,for:1,in:1,on:1,and:1,how:1,can:1,i:1,my:1};
-    function add(txt, cls){ var d = document.createElement('div'); d.className = 'au-msg ' + cls; d.textContent = txt; body.appendChild(d); body.scrollTop = body.scrollHeight; }
-    function tok(s){ return (s||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w && !STOP[w];}); }
-    function ans(q){ var qt = tok(q), best = null, bs = 0;
-      qa.forEach(function(p){ var set = tok(p.q + ' ' + p.a), s = 0; qt.forEach(function(w){ if (set.indexOf(w) >= 0) s++; }); if (s > bs){ bs = s; best = p; } });
-      return (best && bs > 0) ? best.a : "I can tell you about " + who + "'s experience, skills, impact, education and availability. Try a suggestion above, or use the Contact section."; }
-    add("Hi! I'm " + who + "'s assistant. Ask me anything about their background.", 'bot');
-    qa.slice(0, 4).forEach(function(p){ var b = document.createElement('button'); b.textContent = p.q;
-      b.addEventListener('click', function(){ add(p.q, 'user'); setTimeout(function(){ add(p.a, 'bot'); }, 300); }); sugg.appendChild(b); });
-    btn.addEventListener('click', function(){ chatEl.classList.toggle('open'); if (chatEl.classList.contains('open')) input.focus(); });
-    function fire(){ var v = input.value.trim(); if (!v) return; input.value = ''; add(v, 'user'); setTimeout(function(){ add(ans(v), 'bot'); }, 350); }
-    send.addEventListener('click', fire); input.addEventListener('keydown', function(e){ if (e.key === 'Enter') fire(); });
+    var STOP = {the:1,a:1,an:1,is:1,are:1,was:1,were:1,you:1,your:1,yours:1,what:1,whats:1,which:1,tell:1,me:1,about:1,
+      do:1,does:1,of:1,to:1,for:1,in:1,on:1,at:1,and:1,or:1,how:1,can:1,could:1,would:1,i:1,my:1,have:1,has:1,with:1,
+      please:1,any:1,some:1,give:1,show:1,that:1};
+    function tok(s){ return (s||'').toLowerCase().replace(/[^a-z0-9+ ]/g,' ').split(/\s+/).filter(function(w){return w && !STOP[w];}); }
+    function add(txt, cls){ var d=document.createElement('div'); d.className='au-msg '+cls; d.textContent=txt; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
+    function typing(){ var d=document.createElement('div'); d.className='au-msg bot au-typing'; d.innerHTML='<span></span><span></span><span></span>'; body.appendChild(d); body.scrollTop=body.scrollHeight; return d; }
+
+    function listSkills(){ return (kb.skills||[]).map(function(g){return g.group+' ('+(g.items||[]).slice(0,4).join(', ')+')';}).join('; '); }
+    var INTENTS = [
+      [['skill','skills','tech','stack','tool','tools','technolog','expertise','framework','proficient','know'], function(){ var s=listSkills(); return s?('Core skills: '+s+'.'):''; }],
+      [['current','now','currently','latest','present','recent'], function(){ var e=(kb.experience||[])[0]; return e?('Currently '+e.role+' at '+e.company+(e.dates?' ('+e.dates+')':'')+'.'):''; }],
+      [['experience','work','worked','company','companies','role','roles','job','jobs','career','background','history','employ'], function(){ var x=(kb.experience||[]); return x.length?('Experience: '+x.map(function(e){return e.role+' at '+e.company+(e.dates?' ('+e.dates+')':'');}).join('; ')+'.'):''; }],
+      [['education','study','studied','degree','college','university','school','graduat','mba','btech','academic'], function(){ var x=(kb.education||[]); return x.length?('Education: '+x.map(function(e){return e.degree+', '+e.school+(e.year?' ('+e.year+')':'');}).join('; ')+'.'):''; }],
+      [['certif','certified','course','courses','credential','license'], function(){ var c=(kb.certifications||[]); return c.length?('Certifications: '+c.join(', ')+'.'):''; }],
+      [['project','projects','built','build','shipped','made','portfolio'], function(){ var p=(kb.projects||[]); return p.length?('Projects: '+p.map(function(x){return x.title;}).join(', ')+'.'):''; }],
+      [['impact','achievement','achieve','result','results','metric','metrics','outcome','accomplish'], function(){ var m=(kb.metrics||[]); return m.length?('Key impact: '+m.map(function(x){return x.value+' '+x.label;}).join('; ')+'.'):''; }],
+      [['contact','email','reach','hire','hiring','available','availability','open','connect','phone'], function(){ var t=[]; if(kb.email)t.push('Email '+kb.email); if(kb.available)t.push("open to opportunities"); (kb.links||[]).forEach(function(l){t.push(l.label+': '+l.url);}); return t.length?(t.join('. ')+'.'):''; }],
+      [['where','located','location','based','city','country','remote'], function(){ return kb.location?('Based in '+kb.location+'.'):''; }],
+      [['who','summary','yourself','intro','introduce','overview'], function(){ return kb.summary||kb.about||''; }]
+    ];
+    function cannedBest(qt){ var best='',bs=0; qa.forEach(function(p){ var set=tok(p.q+' '+p.a),s=0; qt.forEach(function(w){if(set.indexOf(w)>=0)s++;}); if(s>bs){bs=s;best=p.a;} }); return {a:best,s:bs}; }
+    function intentBest(qt){ var best='',bs=0; INTENTS.forEach(function(it){ var s=0; qt.forEach(function(w){ it[0].forEach(function(k){ if(w.indexOf(k)===0||k.indexOf(w)===0) s++; }); }); if(s>bs){ var a=it[1](); if(a){ bs=s; best=a; } } }); return {a:best,s:bs}; }
+    function answer(q){ var qt=tok(q), c=cannedBest(qt), it=intentBest(qt);
+      if(c.s>=2) return c.a;
+      if(it.s>=1 && it.a) return it.a;
+      if(c.s>=1) return c.a;
+      return "I can tell you about "+who+"'s experience, skills, projects, education, impact, and contact. Try a chip above, or ask e.g. \"What are your skills?\""; }
+    function reply(q){ var t=typing(); setTimeout(function(){ t.remove(); add(answer(q),'bot'); }, 480); }
+
+    add("Hi! I'm "+who+"'s assistant. Ask me anything about their background.", 'bot');
+    var chips = qa.slice(0,3).map(function(p){return p.q;});
+    ['What are your skills?','Where have you worked?','How can I reach you?'].forEach(function(d){ if(chips.length<5 && chips.indexOf(d)<0) chips.push(d); });
+    chips.slice(0,5).forEach(function(qtext){ var b=document.createElement('button'); b.textContent=qtext;
+      b.addEventListener('click', function(){ add(qtext,'user'); reply(qtext); }); sugg.appendChild(b); });
+
+    btn.addEventListener('click', function(){ chatEl.classList.toggle('open'); if(chatEl.classList.contains('open')) input.focus(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') chatEl.classList.remove('open'); });
+    function fire(){ var v=input.value.trim(); if(!v) return; input.value=''; add(v,'user'); reply(v); }
+    send.addEventListener('click', fire); input.addEventListener('keydown', function(e){ if(e.key==='Enter') fire(); });
   }
 })();
