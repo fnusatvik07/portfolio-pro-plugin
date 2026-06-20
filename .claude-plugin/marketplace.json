@@ -1,6 +1,7 @@
 {
   "name": "claude4everyone",
   "description": "Workshop plugins for the Claude for Everyone session.",
+  "owner": { "name": "fnusatvik07" },
   "plugins": [
     {
       "name": "portfolio-pro",
